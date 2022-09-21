@@ -1,0 +1,1975 @@
+@charset "utf-8";
+
+/*============================================================
+# mixins
+============================================================= */
+
+/* google font */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap");
+
+/* breakpoint */
+$layout-width-inner: 1100px;
+
+$breakpoint: (
+  //キー : 値
+  "xsp": "(max-width: 520px)",
+  "sp": "(max-width: 767px)",
+  "tab": "(min-width: 768px) and (max-width: #{$layout-width-inner})",
+  "pc": "(min-width: #{$layout-width-inner})"
+) !default;
+
+@mixin mq($bp) {
+  @media #{map-get($breakpoint, $bp)} {
+    @content;
+  }
+}
+
+/* remの計算 */
+$baseFontSize: 16;
+@function rem($pixels) {
+  @return $pixels / $baseFontSize * 1rem;
+}
+
+/* line-heightの計算*/
+@function lh($pixels, $line-height) {
+  $lh: floor(($line-height / $pixels) * 1000);
+  @return $lh / 1000;
+}
+
+/* line-spacingの計算 */
+@function ls($letter-spacing) {
+  @return ($letter-spacing / 1000) + em;
+}
+
+/*============================================================
+# カラー、フォントサイズの指定
+============================================================= */
+$cBlack: #3e3e3e;
+$cWhite: #fff;
+$cGray: #f3f3f3;
+$cOrange: #ffaa3b;
+$cBule: #4973ff;
+$cRed: #ff4646;
+
+$font-sm: 12px;
+$font-df: 16px;
+$font-md: 20px;
+$font-lg: 28px;
+$font-xl: 32px;
+
+/*============================================================
+# comon  - 全体に共通するスタイル
+============================================================= */
+
+@media screen and(max-width: 1100px) {
+  .is-pc {
+    display: none;
+  }
+}
+@include mq(pc) {
+  .is-sp {
+    display: none;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-size: $font-df;
+  color: $cBlack;
+  font-family: "Montserrat", "Yu Gothic Medium", "游ゴシック Medium", YuGothic,
+    "游ゴシック体", sans-serif;
+  line-height: lh(16, 24);
+  background-color: $cGray;
+}
+
+img {
+  width: 100%;
+}
+
+.inner {
+  max-width: $layout-width-inner;
+  margin: 0 auto;
+  padding: 0 15px;
+  box-sizing: content-box;
+
+  @include mq(pc) {
+    padding: 0 40px;
+  }
+}
+
+/* header
+---------------------------------------------------*/
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  height: 68px;
+  background-color: rgba(255, 255, 255, 0.7);
+
+  @include mq(pc) {
+    height: 83px;
+    max-width: 100%;
+  }
+}
+
+.header-logo {
+  font-size: 23px;
+  font-weight: bold;
+
+  @include mq(pc) {
+    display: none;
+  }
+}
+
+.header-nav {
+  display: none;
+
+  @include mq(pc) {
+    display: block;
+    width: 100%;
+  }
+
+  &-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &-item {
+    &:not(:first-child) {
+      margin-left: 40px;
+    }
+
+    &-link {
+      display: block;
+      letter-spacing: -0.4px;
+      font-size: $font-df;
+      font-weight: 500;
+      color: $cBlack;
+      height: 83px;
+      line-height: 83px;
+      /* 線の起点とするため */
+      position: relative;
+
+      &::after {
+        content: "";
+        /* 線の位置を決める */
+        position: absolute;
+        bottom: 30%;
+        left: 10%;
+        /* 線の形状 */
+        width: 80%;
+        height: 1px;
+        background-color: $cBlack;
+        /* アニメーションの指定 */
+        transition: all 0.3s;
+        transform: scale(0, 1);
+        /* 上部中央起点 */
+        transform-origin: center top;
+      }
+
+      &:hover {
+        color: $cBlack;
+        opacity: 0.7;
+        &::after {
+          /* X方向にスケール拡大 */
+          transform: scale(1.4, 1);
+        }
+      }
+    }
+  }
+}
+
+/* drwaerの実装 */
+.drawer-icon {
+  margin-left: auto;
+  display: block;
+  width: 26px;
+  height: 20px;
+  background-color: transparent;
+  position: relative;
+  z-index: 100;
+
+  @include mq(pc) {
+    display: none;
+  }
+
+  & span {
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    background-color: $cBlack;
+    border-radius: 10px;
+    transition: background-color 0.1s;
+    top: 9px;
+    right: 0;
+
+    &::before,
+    &::after {
+      content: "";
+      width: 100%;
+      height: 4px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: $cBlack;
+      border-radius: 10px;
+    }
+    &::before {
+      top: -9px;
+      transition: transform 0.2s;
+    }
+    &::after {
+      top: 9px;
+      transition: transform 0.3s;
+    }
+  }
+}
+/* マスク部分処理 */
+.drawer-background {
+  width: 0;
+  height: 100%;
+  background-color: rgba(62, 62, 62, 0.7);
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 90;
+
+  @include mq(pc) {
+    display: none;
+  }
+}
+
+.drawer-nav {
+  &-list {
+    width: 0;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 99;
+    background-color: $cWhite;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.4s;
+
+    @include mq(pc) {
+      display: none;
+    }
+  }
+
+  &-item {
+    margin-top: 44px;
+
+    &:not(:first-child) {
+      margin-top: 27px;
+    }
+
+    &-link {
+      display: block;
+      font-size: 18px;
+      font-weight: 500;
+      color: inherit;
+      transform: translateX(400px);
+      transition: transform 0.4s;
+      /* 線の起点とするため */
+      position: relative;
+
+      &::after {
+        content: "";
+        /* 線の位置を決める */
+        position: absolute;
+        bottom: 0;
+        left: 10%;
+        /* 線の形状 */
+        width: 80%;
+        height: 1px;
+        background-color: $cBlack;
+        /* アニメーションの指定 */
+        transition: all 0.3s;
+        transform: scale(0, 1);
+        /* 上部中央起点 */
+        transform-origin: center top;
+      }
+
+      &:hover {
+        color: $cBlack;
+        opacity: 0.7;
+
+        &::after {
+          /* X方向にスケール拡大 */
+          transform: scale(1.4, 1);
+        }
+      }
+    }
+  }
+}
+/* icon移動のため、logo分の横幅を無くす処理 */
+body.is-open .header-logo {
+  display: none;
+}
+
+/* クリックされてからのicon処理 */
+body.is-open .drawer-icon {
+  margin-right: 300px;
+  transition: margin 0.4s;
+
+  & span {
+    background-color: transparent;
+    top: 31px;
+
+    &::before,
+    &::after {
+      background-color: $cWhite;
+    }
+    &::before {
+      transform: translateY(9px) rotate(315deg);
+    }
+    &::after {
+      transform: translateY(-9px) rotate(-315deg);
+    }
+  }
+}
+/* クリックされてからのマスク処理 */
+body.is-open .drawer-background {
+  width: 100%;
+}
+/* リスト背景部分 */
+body.is-open .drawer-nav-list {
+  /* 表示されてから横幅を広げても非表示にするための処理 */
+  width: 300px;
+}
+/* リストアイテムのリンク部分 */
+body.is-open .drawer-nav-item-link {
+  /* リンク部分を滑らかにスライドさせるための処理 */
+  transform: translateX(0);
+}
+
+/*============================================================
+# main
+============================================================= */
+/* common
+---------------------------------------------------*/
+
+.section {
+  margin-bottom: 60px;
+
+  @include mq(tab) {
+    margin-bottom: 80px;
+  }
+
+  @include mq(pc) {
+    margin-bottom: 120px;
+  }
+}
+
+/* util
+---------------------------------------------------*/
+
+/* 見出し */
+.util-title {
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+  line-height: lh(30, 40);
+  margin-bottom: 38px;
+
+  @include mq(pc) {
+    font-size: 36px;
+    bottom: 60px;
+  }
+}
+
+/* 見出しパーツ */
+.-right {
+  text-align: left;
+}
+
+.util-white {
+  color: $cWhite;
+}
+
+/* ボタン1 */
+.util-link-conversion {
+  display: inline-block;
+  padding: 16px 32px;
+  font-size: $font-df;
+  font-weight: bold;
+  color: $cWhite;
+  background: $cOrange;
+  border-radius: 10px;
+  box-shadow: 0 3px 5px rgba(62, 62, 62, 0.2);
+  transition: background-color 0.4s;
+  cursor: pointer;
+
+  @include mq(pc) {
+    font-size: 18px;
+    padding: 16px 50px;
+    letter-spacing: 0.45px;
+  }
+
+  &:hover {
+    background-color: #f18900;
+  }
+  /* 未入力時ボタン */
+  &.-disabled {
+    background: #b2b2b2;
+    color: #fff;
+  }
+}
+
+/* ボタン2 */
+.util-link-generic {
+  display: inline-block;
+  padding: 16px 100px;
+  font-size: $font-md;
+  font-weight: bold;
+  letter-spacing: 4px;
+  border: 1px solid $cBlack;
+}
+
+
+/* ボタンホバー on/off時 */
+
+.-white {
+  background-color: $cWhite;
+  color: $cBlack;
+  
+  &:hover {
+    background-color: $cBlack;
+    color: $cWhite;
+  }
+}
+
+.-black {
+  background-color: $cBlack;
+  color: $cWhite;
+  border: 1px solid $cWhite;
+  
+  &:hover {
+    background-color: $cWhite;
+    color: $cBlack;
+  }
+}
+/* ホバー時アニメーション */
+.-white,
+.-black {
+  transition: background-color 0.4s;
+}
+
+/* top
+---------------------------------------------------*/
+.top {
+  background: url(../img/sp/mv.png) no-repeat 22% center / cover;
+  height: 667px;
+  position: relative;
+
+  @include mq(pc) {
+    background: url(../img/mv.png) no-repeat center center / cover;
+    height: 647px;
+  }
+}
+.top-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0 15px;
+
+  @include mq(sp) {
+    width: 100%;
+  }
+
+  @include mq(pc) {
+    top: 50%;
+    left: 50%;
+    transform: translate(-2.3%, -33.1%);
+  }
+}
+.top-message {
+  color: $cBlack;
+  font-weight: bold;
+
+  @include mq(pc) {
+    padding-right: 10px;
+  }
+
+  &-title {
+    font-size: 24px;
+    line-height: lh(24, 40);
+    margin-bottom: 21px;
+
+    @include mq(pc) {
+      font-size: 32px;
+      line-height: lh(32, 48);
+      letter-spacing: 0.02px;
+      margin-bottom: 27px;
+    }
+  }
+  &-text {
+    font-size: 14px;
+    line-height: lh(14, 20);
+    margin-bottom: 23px;
+
+    @include mq(pc) {
+      font-size: 18px;
+      line-height: lh(18, 28);
+      letter-spacing: 0.45px;
+      margin-bottom: 40px;
+    }
+  }
+}
+.top-footer {
+  text-align: center;
+
+  @include mq(pc) {
+    text-align: left;
+  }
+}
+
+.top-btn {
+  padding: 12px 30px;
+  margin-bottom: 10px;
+
+  @include mq(pc) {
+    padding: 13px 50px;
+    margin-bottom: 20px;
+  }
+}
+
+/* nwes
+---------------------------------------------------*/
+
+.news {
+  margin-top: -40px;
+  position: relative;
+
+  @include mq(pc) {
+    margin-top: 120px;
+    max-width: 1200px;
+  }
+}
+
+.news-inner {
+  width: 343px;
+  padding: 40px 0;
+  margin: 0 auto;
+  background-color: $cWhite;
+  box-shadow: 0 5px 12px rgba(62, 62, 62, 0.2);
+
+  @include mq(xsp) {
+    width: 100%;
+  }
+
+  @include mq(tab) {
+    width: 80%;
+  }
+
+  @include mq(pc) {
+    width: 100%;
+    padding: 60px 60px 40px 60px;
+  }
+}
+
+.news-title {
+  @include mq(pc) {
+    margin-bottom: 56px;
+  }
+}
+
+.news-list {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 40px;
+}
+
+.news-item {
+  height: 100%;
+  border-bottom: 1px solid #cecdcd;
+  position: relative;
+
+  &:first-child {
+    border-top: 1px solid #cecdcd;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    background: url(../img/news-arrow.svg) no-repeat center center / contain;
+    width: 15px;
+    height: 22px;
+  }
+
+  &-link {
+    color: inherit;
+    display: block;
+    padding: 14px 54px 9px 16px;
+    transition: background-color 0.2s;
+
+    @include mq(pc) {
+      display: flex;
+      align-items: center;
+      padding: 38px 54px 39px 0;
+    }
+
+    &:hover {
+      background-color: rgba(73, 115, 255, 0.1);
+    }
+  }
+
+  &-head {
+    display: flex;
+    margin-bottom: 6px;
+
+    @include mq(pc) {
+      justify-content: space-between;
+      margin-bottom: 0;
+    }
+  }
+
+  &-date {
+    font-size: 14px;
+    margin-right: 26px;
+
+    @include mq(pc) {
+      flex: 0 0 1;
+      font-size: 18px;
+      letter-spacing: 0.45px;
+      line-height: lh(18, 26);
+      margin-right: 38px;
+    }
+  }
+
+  &-tag {
+    box-sizing: content-box;
+    font-size: 12px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 15px;
+    height: 15px;
+    border: 2px solid $cBule;
+    border-radius: 50px;
+
+    @include mq(pc) {
+      padding: 0 35px;
+      height: 25px;
+    }
+  }
+  &-text {
+    font-size: 14px;
+
+    @include mq(pc) {
+      font-size: 18px;
+      flex: 0 1 698px;
+      margin-left: 40px;
+      line-height: lh(18, 28);
+      letter-spacing: 0.026em;
+    }
+  }
+}
+.news-footer {
+  text-align: center;
+}
+.news-btn {
+  padding: 13px 96px;
+  font-size: 18px;
+  font-weight: 500;
+
+  @include mq(pc) {
+    font-size: 20px;
+    padding: 16px 78px;
+    margin-top: 3px;
+  }
+}
+
+/* service
+---------------------------------------------------*/
+.service {
+  background: $cBlack;
+  padding: 40px 0;
+  height: 400px;
+  margin-bottom: 391px;
+
+  @include mq(pc) {
+    max-width: 100%;
+    padding: 60px 0 0;
+    height: 340px;
+    margin-bottom: 215px;
+  }
+}
+
+.service-title {
+  @include mq(pc) {
+    margin-bottom: 56px;
+  }
+}
+
+.service-inner {
+  background: $cWhite;
+  width: 343px;
+  margin: 0 auto;
+  box-shadow: 0 5px 12px rgba(62, 62, 62, 0.2);
+
+  @include mq(xsp) {
+    width: 92%;
+  }
+
+  @include mq(tab) {
+    width: 70%;
+  }
+
+  @include mq(pc) {
+    width: 100%;
+    max-width: 960px;
+  }
+}
+
+.service-nav-list {
+  padding: 50px 16px 35px;
+  display: flex;
+  flex-direction: column;
+
+  @include mq(pc) {
+    flex-direction: row;
+    padding: 71px 45px 61px;
+  }
+}
+
+.service-nav-item {
+  color: $cBlack;
+
+  & + & {
+    margin-top: 49px;
+    padding-top: 4px;
+
+    @include mq(pc) {
+      padding-top: 5px;
+      margin-top: 0;
+      margin-left: 90px;
+    }
+
+    & .service-nav-item-title {
+      @include mq(pc) {
+        padding-top: 7px;
+      }
+    }
+  }
+
+  &-head {
+    width: 50px;
+    margin: 0 auto 19px;
+  }
+
+  &-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    line-height: lh(20, 24);
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  &-text {
+    max-width: 500px;
+    margin: 0 auto;
+    font-size: 14px;
+    line-height: lh(14, 24);
+  }
+}
+
+/* results
+---------------------------------------------------*/
+
+.results-bg-container {
+  @include mq(pc) {
+    padding-left: 40px;
+  }
+}
+.results {
+  background: $cBlack;
+  padding: 40px 15px;
+  margin-bottom: 38px;
+
+  @include mq(pc) {
+    max-width: calc(50vw + 600px);
+    padding: 60px 0 60px 60px;
+    margin-right: 0;
+    margin-bottom: 120px;
+  }
+}
+
+.results-title {
+  @include mq(pc) {
+    text-align: left;
+    margin-bottom: 55px;
+  }
+}
+
+.swiper {
+  width: 100%;
+  height: 299px;
+
+  @include mq(pc) {
+    height: 425px;
+  }
+}
+
+.swiper-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.swiper-slide {
+  width: 274px;
+
+  @include mq(pc) {
+    width: 400px;
+  }
+}
+.results-card-item-link {
+  color: $cBlack;
+}
+.results-card-item-header {
+  object-fit: cover;
+}
+.results-card-item-body {
+  background: $cWhite;
+  padding: 12px;
+
+  @include mq(pc) {
+    padding: 15px 7px 16px 13px;
+  }
+}
+.results-card-item-title {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  line-height: lh(14, 16);
+
+  @include mq(pc) {
+    font-size: 20px;
+    line-height: lh(20, 24);
+    margin-bottom: 13px;
+  }
+}
+.results-card-item-text {
+  font-size: 12px;
+  letter-spacing: 0.02px;
+
+  @include mq(pc) {
+    font-size: 16px;
+    line-height: lh(16, 24);
+    letter-spacing: 0;
+  }
+}
+// ページネーションバレット
+
+// 親要素
+.swiper-horizontal > .swiper-pagination-bullets,
+.swiper-pagination-bullets.swiper-pagination-horizontal,
+.swiper-pagination-custom,
+.swiper-pagination-fraction {
+  bottom: 0;
+
+  @include mq(pc) {
+    bottom: 4px;
+  }
+}
+
+// バレット通常
+.swiper-horizontal > .swiper-pagination-bullets .swiper-pagination-bullet,
+.swiper-pagination-horizontal.swiper-pagination-bullets
+  .swiper-pagination-bullet {
+  background-color: $cWhite;
+  width: 12px;
+  height: 12px;
+
+  &:not(:first-child) {
+    margin-left: 16px;
+  }
+  // アクティブ時
+  &.swiper-pagination-bullet-active {
+    position: relative;
+
+    &::after {
+      content: "";
+      width: 20px;
+      height: 20px;
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      border: 1px solid $cWhite;
+      border-radius: 50px;
+    }
+  }
+}
+// バレット透明度
+.swiper-pagination-bullet {
+  opacity: 1;
+}
+.swiper-pagination {
+  @include mq(pc) {
+    display: flex;
+  }
+}
+
+.results-footer {
+  text-align: center;
+  margin-top: 21px;
+
+  @include mq(pc) {
+    text-align: left;
+    margin-top: 42px;
+  }
+}
+.results-btn {
+  padding: 11px 96px;
+  letter-spacing: 0.12em;
+
+  @include mq(pc) {
+    padding: 16px 82px;
+  }
+}
+
+/* price
+---------------------------------------------------*/
+
+.price {
+  margin-bottom: 115px;
+
+  @include mq(pc) {
+    margin-bottom: 262px;
+  }
+}
+
+.price-title {
+  @include mq(pc) {
+    margin-bottom: 56px;
+  }
+}
+
+.price-table {
+  border-collapse: collapse;
+  border: 1px solid #707070;
+  min-width: 343px;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+
+  @include mq(xsp) {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  & tr {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &:not(:first-child) th,
+    &:not(:first-child) td {
+      border-top: 1px solid #707070;
+    }
+
+    &:not(:last-child) th {
+      border-bottom: 1px solid #e6e6e6;
+    }
+  }
+
+  & th,
+  & td {
+    font-weight: bold;
+    font-size: 18px;
+    line-height: lh(18, 24);
+    letter-spacing: 0.05em;
+
+    @include mq(pc) {
+      font-size: 24px;
+      line-height: lh(24, 29);
+      letter-spacing: 0;
+      height: 60px;
+    }
+  }
+
+  & th {
+    background-color: $cBlack;
+    color: $cWhite;
+    padding: 15px 21px;
+    flex: 0 0 30%;
+
+    @include mq(pc) {
+      flex: 0 0 27%;
+    }
+  }
+
+  & td {
+    background-color: $cWhite;
+    flex: 0 0 70%;
+    padding: 15px 0 15px 20px;
+
+    @include mq(pc) {
+      padding-left: 40px;
+      flex: 0 0 73%;
+    }
+  }
+}
+.price-table-attention {
+  max-width: 960px;
+  margin: 0 auto;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: lh(12, 20);
+  color: #3e3e3e;
+
+  @include mq(pc) {
+    margin-top: 9px;
+  }
+}
+
+/*============================================================
+# bg-wrapper (comments,accessにて使用) PC時のposition:relative;
+============================================================= */
+.bg-wrapper {
+  max-width: 100%;
+  margin: 0 auto;
+
+  @include mq(pc) {
+    position: relative;
+    height: 576px;
+  }
+}
+
+/* comments
+---------------------------------------------------*/
+
+.comments {
+  background-color: $cBlack;
+  position: relative;
+  height: 425px;
+
+  @include mq(pc) {
+    max-width: 100%;
+    width: calc(980 / 1280 * 100%);
+    padding: 0;
+    height: 576px;
+    margin-left: 0;
+    position: static;
+  }
+}
+.comments-wrapper {
+  max-width: 1200px;
+  width: 100%;
+
+  @include mq(pc) {
+    position: absolute;
+    top: -26%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+  }
+}
+.comments-inner {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0 auto;
+  margin-top: -60px;
+  min-width: 343px;
+  padding: 38px 20px;
+  background-color: $cWhite;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.16);
+
+  @include mq(pc) {
+    position: static;
+    width: 100%;
+    transform: translateX(0);
+    margin-top: 0;
+    padding: 123px 50px 121px 60px;
+    flex: 0 1 1;
+  }
+}
+
+.comments-title {
+  @include mq(pc) {
+    margin-bottom: 54px;
+  }
+}
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+}
+.comments-item {
+  display: flex;
+
+  & + & {
+    margin-top: 32px;
+
+    @include mq(pc) {
+      margin-top: 59px;
+    }
+  }
+
+  &-head {
+    flex: 0 0 100px;
+
+    @include mq(xsp) {
+      flex: 0 0 59px;
+    }
+  }
+
+  &-text {
+    max-width: 414px;
+    margin-left: 20px;
+    font-size: 14px;
+    line-height: lh(14, 20);
+    letter-spacing: 0.001em;
+
+    @include mq(pc) {
+      margin-top: -2px;
+      margin-left: 30px;
+      font-size: 16px;
+      line-height: lh(16, 24);
+    }
+  }
+}
+.comments-picture {
+  width: 88%;
+  max-width: 100%;
+  height: 444px;
+  background: url(../img/comments3.png) no-repeat center center / cover;
+  flex: 0 1 1;
+}
+
+/* faqs
+---------------------------------------------------*/
+
+.faqs {
+  background: url(../img/qa-bg.png) no-repeat center center / cover;
+  padding: 40px 16px 60px;
+  max-width: none;
+
+  @include mq(pc) {
+    padding: 60px 40px 120px;
+  }
+}
+.faqs-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.faqs-title {
+  @include mq(pc) {
+    margin-bottom: 56px;
+  }
+}
+
+.faqs-nav-item {
+  background: $cWhite;
+  border-radius: 4px;
+  padding: 17px 16px 14px;
+  max-width: 612px;
+  cursor: pointer;
+  margin: 0 auto;
+
+  @include mq(pc) {
+    margin: 0;
+    margin-left: auto;
+    padding: 17px 16px 15px;
+  }
+
+  & + & {
+    margin-top: 24px;
+
+    @include mq(pc) {
+      margin-top: 32px;
+    }
+  }
+
+  &:first-child,
+  &:nth-child(2) {
+    & .accordion-body {
+      display: block;
+    }
+  }
+}
+
+.accordion-head {
+  font-size: 16px;
+  font-weight: bold;
+  line-height: lh(16, 24);
+  padding-left: 40px;
+  position: relative;
+
+  &::before {
+    content: "Q";
+    position: absolute;
+    font-weight: 500;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-55%);
+    z-index: 1;
+    color: $cWhite;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0px;
+    transform: translateY(-55%);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #3b69ff;
+  }
+}
+.accordion-body {
+  display: none;
+  background: #3b69ff33;
+  padding: 12px 16px 9px 12px;
+  margin-top: 13px;
+  border-radius: 4px;
+
+  @include mq(pc) {
+    margin-top: 16px;
+    padding: 11px 16px 11px 15px;
+  }
+
+  &-in {
+    font-size: 14px;
+    line-height: lh(14, 20);
+
+    @include mq(pc) {
+      font-size: 16px;
+      line-height: lh(16, 24);
+    }
+  }
+}
+
+.accordion-icon {
+  position: absolute;
+  top: 38%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 17px;
+  height: 3px;
+  background-color: #3b69ff;
+  transition: transform 0.3s ease;
+  border-radius: 2px;
+
+  &.is-open {
+    transform: rotate(90deg);
+    background-color: transparent;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 7px;
+    width: 3px;
+    height: 16px;
+    transform: translateY(-50%);
+    background-color: #3b69ff;
+    border-radius: 2px;
+  }
+}
+
+/* access
+---------------------------------------------------*/
+
+.access-wrapper {
+  @include mq(pc) {
+    height: 760px;
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+.access {
+  background-color: $cBlack;
+  padding: 41px 16px 60px;
+  max-width: 100%;
+
+  @include mq(pc) {
+    max-width: 100%;
+    width: calc(980 / 1280 * 100%);
+    height: 504px;
+    margin-left: 0;
+    padding: 0;
+    margin-bottom: 256px;
+  }
+}
+
+.access-content {
+  display: flex;
+  flex-direction: column;
+
+  @include mq(pc) {
+    max-width: 1200px;
+    position: absolute;
+    top: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 520px;
+    width: 100%;
+    display: grid;
+    grid-template-rows: 180px 1fr;
+    grid-template-columns: 474px 1fr;
+  }
+}
+.access-textarea {
+  order: 1;
+
+  @include mq(pc) {
+    grid-column: 1/1;
+    grid-row: 1/1;
+  }
+}
+.access-title {
+  color: $cWhite;
+
+  @include mq(pc) {
+    margin-bottom: 52px;
+    margin-left: 60px;
+  }
+}
+.access-address-text {
+  font-size: 14px;
+  line-height: lh(14, 20);
+  color: $cWhite;
+  font-style: normal;
+  margin-bottom: 18px;
+
+  @include mq(pc) {
+    font-size: 16px;
+    line-height: lh(16, 24);
+    margin-bottom: 32px;
+    margin-left: 60px;
+  }
+}
+.access-footer {
+  text-align: center;
+  order: 3;
+
+  @include mq(pc) {
+    margin-top: 20px;
+    text-align: left;
+    grid-column: 1/1;
+    grid-row: 2/2;
+  }
+}
+.access-btn {
+  padding: 11px 97px;
+  letter-spacing: 0.6px;
+
+  @include mq(pc) {
+    padding: 16px 79px;
+    letter-spacing: 2px;
+    margin-left: 60px;
+  }
+}
+
+.iframe-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  padding-top: calc((241 / 343) * 100%); /* = height ÷ width × 100 */
+  margin-bottom: 24px;
+  order: 2;
+
+  @include mq(pc) {
+    padding-top: calc((520 / 726) * 100%);
+    grid-column: 2/2;
+    grid-row: 1/2;
+  }
+
+  & iframe {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* contact
+---------------------------------------------------*/
+.contact {
+  background: url(../img/contact-bg.png) no-repeat center center / cover;
+  padding: 40px 16px;
+
+  @include mq(pc) {
+    max-width: 100%;
+    padding: 60px 0;
+  }
+
+  // フォーム内の初期化、基礎情報
+  & select,
+  & input[type="text"],
+  & input[type="email"],
+  & textarea {
+    width: 100%;
+    font-size: 14px;
+    line-height: 14px;
+    border: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: transparent;
+    background-image: none;
+    border-radius: 0;
+    color: inherit;
+    font-family: inherit;
+    box-shadow: none;
+    height: 38px;
+    outline: none;
+
+    @include mq(pc) {
+      font-size: 16px;
+      line-height: 1;
+      height: 40px;
+    }
+
+    &:hover,
+    &:focus {
+      border-bottom: #4973ff;
+      box-shadow: 0 5px 4px rgba(73, 115, 255, 0.5);
+    }
+  }
+
+  & select,
+  & textarea {
+    &:hover,
+    &:focus {
+      border: 1px solid #4973ff;
+      box-shadow: 0 0 8px rgba(73, 115, 255, 0.5);
+    }
+  }
+
+  & select {
+    padding: 12px;
+    transition: box-shadow 0.3s;
+    border: 1px solid #707070;
+
+    &:hover {
+      box-shadow: 0px 0px 5px rgba(73, 115, 255, 0.5);
+    }
+
+    @include mq(pc) {
+      width: 178px;
+    }
+  }
+
+  & input[type="text"],
+  & input[type="email"],
+  & textarea {
+    padding: 0.2em 0.1em;
+    opacity: 0.5;
+
+    @include mq(pc) {
+      padding: 0.5em 0.7em;
+    }
+  }
+
+  & input[type="text"],
+  & input[type="email"] {
+    height: 19px;
+    border-bottom: 1px solid $cBlack;
+
+    @include mq(pc) {
+      height: 38px;
+    }
+  }
+
+  & textarea {
+    min-height: 160px;
+    resize: vertical;
+    border: 1px solid $cBlack;
+
+    @include mq(pc) {
+      min-height: 200px;
+      margin-top: 3px;
+    }
+  }
+}
+
+.contact-inner {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.contact-head {
+  background: url(../img/contact1.png) no-repeat center center / cover;
+  color: $cWhite;
+  padding: 40px 16px 35px;
+  border-radius: 12px 12px 0px 0px;
+  box-shadow: 0 3px 5px rgba(62, 62, 62, 0.2);
+
+  @include mq(pc) {
+    padding: 61px 16px 56px;
+  }
+}
+
+.contact-title {
+  margin-bottom: 7px;
+}
+.contact-text {
+  font-size: 14px;
+  line-height: lh(14, 20);
+
+  @include mq(pc) {
+    text-align: center;
+    font-size: 16px;
+    line-height: lh(16, 24);
+  }
+}
+
+.contact-form {
+  background: $cWhite;
+  padding: 38px 12px 40px;
+  border-radius: 0 0 10px 10px;
+
+  @include mq(pc) {
+    padding: 60px 120px;
+  }
+}
+
+.contact-item {
+  display: flex;
+  flex-direction: column;
+
+  & + & {
+    margin-top: 26px;
+
+    @include mq(pc) {
+      margin-top: 27px;
+    }
+  }
+
+  @include mq(pc) {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.contact-item-title {
+  font-size: 16px;
+  font-weight: bold;
+  line-height: lh(16, 24);
+  margin-bottom: 10px;
+
+  @include mq(pc) {
+    margin-bottom: 0;
+    margin-right: 60px;
+    flex: 0 0 128px;
+  }
+
+  &-inline {
+    display: inline-block;
+    margin-left: 20px;
+    font-size: 12px;
+    line-height: 17px;
+    width: 40px;
+    height: 16px;
+    color: $cWhite;
+    background-color: $cRed;
+    text-align: center;
+
+    @include mq(pc) {
+      margin-left: 12px;
+    }
+  }
+}
+
+.select-input {
+  /* selectの矢印作成 */
+  position: relative;
+  width: 100%;
+
+  &::after {
+    content: "";
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-bottom: 2px solid $cBlack;
+    border-right: 2px solid $cBlack;
+    transform: translateY(-55%) rotate(45deg);
+
+    @include mq(pc) {
+      left: 30%;
+    }
+  }
+}
+
+.contact-item-input {
+  @include mq(pc) {
+    flex: 0 0 532px;
+  }
+}
+.contact-item-textarea {
+  margin-top: 23px;
+}
+
+/* デフォルトのラジオボタンを非表示 */
+.contact-radio-input {
+  display: none;
+
+  /* オリジナルボタンを設置するため、paddngでテキストの左側にスペースを確保 */
+  & + span {
+    cursor: pointer;
+    display: inline-block;
+    padding: 0 0 0 20px;
+    position: relative;
+    margin-right: 38px;
+
+    /* 擬似要素beforeとafterを共通でセット */
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* beforeをラジオボタンの枠として利用するため、デザインを適用する */
+    &::before {
+      background: #fff;
+      border: 1px solid #707070;
+      display: block;
+      left: 0;
+      width: 12px;
+      height: 12px;
+      border-radius: 10px;
+    }
+    /* マウスクリック時の挙動 */
+    &:active::before {
+      background: rgba(73, 115, 255, 0.2);
+    }
+    /* afterは枠の中のチェックマークとして利用するため、デザインを適用する
+    デフォルトのチェックマークはopacity:0で透明にしておく*/
+    &::after {
+      border: 1px solid transparent;
+      left: 3px;
+      width: 6px;
+      height: 6px;
+      background: #3b69ff;
+      border-radius: 10px;
+      transition: opacity 0.3s ease 0s;
+      opacity: 0;
+    }
+  }
+
+  /* 非表示にしたデフォルトのラジオボタンにチェックが入ると、オリジナルボタンのチェックも透明を解除して表示する */
+  &:checked + span::after {
+    opacity: 1;
+  }
+  &:hover + span::before {
+    box-shadow: 0px 0px 6px rgba(73, 115, 255, 0.2);
+    border: 1px solid #3b69ff;
+  }
+}
+
+.contact-footer {
+  margin-top: 22px;
+
+  @include mq(pc) {
+    margin-top: 31px;
+  }
+
+  &-text {
+    margin-bottom: -5px;
+
+    @include mq(pc) {
+      margin-bottom: 0;
+    }
+  }
+  &-submit {
+    text-align: center;
+
+    @include mq(pc) {
+      text-align: left;
+    }
+  }
+}
+
+/* デフォルトのラジオボタンを非表示 */
+.contact-privacy-input {
+  display: none;
+
+  /* オリジナルボタンを設置するため、paddngでテキストの左側にスペースを確保 */
+  & + span {
+    cursor: pointer;
+    display: inline-block;
+    padding: 0 0 0 20px;
+    position: relative;
+    margin-right: 40px;
+
+    /* 擬似要素beforeとafterを共通でセット */
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* beforeをラジオボタンの枠として利用するため、デザインを適用する */
+    &::before {
+      background: #fff;
+      border: 1px solid #707070;
+      display: block;
+      left: -18px;
+      width: 18px;
+      height: 18px;
+    }
+    /* マウスクリック時の挙動 */
+    &:active::before {
+      background: rgba(73, 115, 255, 0.2);
+    }
+    /* afterは枠の中のチェックマークとして利用するため、デザインを適用する
+    デフォルトのチェックマークはopacity:0で透明にしておく*/
+    &::after {
+      border: 1px solid transparent;
+      top: 1px;
+      left: -16px;
+      width: 7px;
+      height: 15px;
+      border-bottom: 2px solid #3b69ff;
+      border-right: 2px solid #3b69ff;
+      transform: translate(50%, 13%) rotate(45deg);
+      transition: opacity 0.3s ease 0s;
+      opacity: 0;
+    }
+  }
+
+  /* 非表示にしたデフォルトのラジオボタンにチェックが入ると、オリジナルボタンのチェックも透明を解除して表示する */
+  &:checked + span::after {
+    opacity: 1;
+  }
+  &:hover + span::before {
+    box-shadow: 0px 0px 6px rgba(73, 115, 255, 0.2);
+    border: 1px solid #3b69ff;
+  }
+}
+
+.contact-privacy-part {
+  font-weight: bold;
+  margin-bottom: 35px;
+  margin-left: 18px;
+
+  @include mq(pc) {
+    font-size: 18px;
+  }
+}
+
+.contact-btn {
+  padding: 12px 50px;
+}
+
+// form送信時の表示
+.contact-message {
+  background-color: $cWhite;
+  padding: 60px 0;
+  margin-top: 0;
+  height: 100px;
+  font-size: 14px;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 3px 5px rgba(62, 62, 62, 0.2);
+  text-align: center;
+  display: none;
+
+  @include mq(pc) {
+    padding: 120px 0;
+    font-size: 16px;
+  }
+
+  &.-error {
+    color: #f00;
+  }
+}
+
+/* footer
+---------------------------------------------------*/
+.footer {
+  background: $cBlack;
+  padding: 50px 0 57px;
+
+  @include mq(pc) {
+    height: 292px;
+    padding: 46px 0 57px;
+  }
+}
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+
+  @include mq(pc) {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 160px;
+  }
+}
+.footer-sns-list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 26px;
+
+  @include mq(pc) {
+    justify-content: flex-start;
+  }
+}
+.footer-sns-item + .footer-sns-item {
+  margin-left: 50px;
+
+  @include mq(pc) {
+    margin-left: 32px;
+  }
+}
+.footer-sns-item-link {
+  color: #cecdcd;
+  font-size: 40px;
+  opacity: 0.7;
+}
+
+.footer-nav-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 38px;
+
+  @include mq(pc) {
+    align-items: flex-start;
+  }
+}
+.footer-nav-item + .footer-nav-item {
+  margin-top: 13px;
+
+  @include mq(pc) {
+    margin-top: 14px;
+  }
+}
+.footer-nav-item-link {
+  color: $cWhite;
+  font-size: 14px;
+  line-height: lh(14, 26);
+  letter-spacing: 0.35px;
+
+  @include mq(pc) {
+    font-size: 16px;
+    line-height: lh(16, 26);
+    letter-spacing: 0.4px;
+  }
+}
+.footer-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  @include mq(pc) {
+    justify-content: flex-start;
+    align-items: flex-end;
+  }
+}
+.footer-logo p {
+  color: #e3e3e3;
+  font-size: 32px;
+  font-weight: bold;
+  line-height: 1;
+
+  @include mq(pc) {
+    font-size: 40px;
+    line-height: lh(40, 77);
+  }
+}
+.footer-copyright {
+  color: #ffffff;
+  opacity: 0.6;
+  font-size: 12px;
+  line-height: lh(12, 15);
+  letter-spacing: 0.3px;
+  margin-top: 15px;
+
+  @include mq(pc) {
+    margin-top: -5px;
+  }
+}
+
+/* pageTop
+---------------------------------------------------*/
+
+/*============================
+ページトップ：ギミック
+=============================*/
+#page-top {
+  position: fixed;
+  bottom: 70px;
+  right: 30px;
+  font-size: 20px;
+  z-index: 99;
+
+  @include mq(pc) {
+    bottom: 41px;
+    right: 40px;
+  }
+
+  & a {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #fff;
+    opacity: 0.8;
+    position: relative;
+    transition: all 0.3s ease;
+
+    &:hover {
+      opacity: 0.5;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      border-top: 3px solid $cBlack;
+      border-left: 3px solid $cBlack;
+      transform: translate(-50%, -30%) rotate(45deg);
+      opacity: 0.8;
+    }
+  }
+  @include mq(sp) {
+    bottom: 14px;
+    right: 16px;
+  }
+}
