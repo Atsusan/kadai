@@ -356,7 +356,7 @@ body.is-open .drawer-nav-list {
 }
 /* リストアイテムのリンク部分 */
 body.is-open .drawer-nav-item-link {
-  /* リンク部分を滑らかにスライドさせるための処理 */
+  /* リンク部分を滑らかにスライドさせるための処理 */
   transform: translateX(0);
 }
 
@@ -469,7 +469,7 @@ body.is-open .drawer-nav-item-link {
 /* ホバー時アニメーション */
 .-white,
 .-black {
-  transition: background-color 0.4s;
+  transition: background-color 0.4s, color 0.3s;
 }
 
 /* top
@@ -1361,6 +1361,7 @@ body.is-open .drawer-nav-item-link {
   line-height: lh(14, 20);
   color: $cWhite;
   font-style: normal;
+  font-family: "游ゴシック Medium", YuGothic, "游ゴシック体", sans-serif;
   margin-bottom: 18px;
 
   @include mq(pc) {
@@ -1440,8 +1441,9 @@ body.is-open .drawer-nav-item-link {
     background-color: transparent;
     background-image: none;
     border-radius: 0;
-    color: inherit;
-    font-family: inherit;
+    color: $cBlack;
+    font-weight: normal;
+    font-family: "游ゴシック Medium", YuGothic, "游ゴシック体", sans-serif;;
     box-shadow: none;
     height: 38px;
     outline: none;
@@ -1879,11 +1881,16 @@ body.is-open .drawer-nav-item-link {
   font-size: 14px;
   line-height: lh(14, 26);
   letter-spacing: 0.35px;
+  transition: opacity 0.3s;
 
   @include mq(pc) {
     font-size: 16px;
     line-height: lh(16, 26);
     letter-spacing: 0.4px;
+  }
+
+  &:hover {
+    opacity: 0.5;
   }
 }
 .footer-body {
