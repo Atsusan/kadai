@@ -1509,12 +1509,14 @@ body.is-open .drawer-nav-item-link {
     min-height: 160px;
     resize: vertical;
     border: 1px solid $cBlack;
+    color: black;
 
     @include mq(pc) {
       min-height: 200px;
       margin-top: 3px;
     }
   }
+
 }
 
 .contact-inner {

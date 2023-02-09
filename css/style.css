@@ -811,8 +811,7 @@ body.is-open .drawer-nav-item-link {
 }
 
 .results-card-item-header {
-  -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
 }
 
 .results-card-item-body {
